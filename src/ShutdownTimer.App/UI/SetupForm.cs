@@ -59,8 +59,8 @@ public sealed class SetupForm : Form
             Size = new Size(472, 42),
             FlowDirection = FlowDirection.LeftToRight,
             WrapContents = false,
-            Margin = Padding.Empty,
-            Padding = Padding.Empty
+            Margin = System.Windows.Forms.Padding.Empty,
+            Padding = System.Windows.Forms.Padding.Empty
         };
 
         _presetButtons = DurationSelectionModel.Presets
@@ -154,7 +154,8 @@ public sealed class SetupForm : Form
     private Button CreatePresetButton(int minutes)
     {
         var button = CreateButton($"{minutes} min", $"preset{minutes}Button", new Size(148, 38));
-        button.Margin = new Padding(0, 0, 14, 0);
+        button.Margin = new Padding(0, 0, 12, 0);
+        button.Tag = minutes;
         button.Click += (_, _) =>
         {
             _durationModel.SelectPreset(minutes);
@@ -171,7 +172,8 @@ public sealed class SetupForm : Form
             Name = name,
             Text = text,
             Size = size,
-            FlatStyle = FlatStyle.System,
+            FlatStyle = FlatStyle.Flat,
+            UseVisualStyleBackColor = false,
             AccessibleName = text
         };
     }
@@ -199,7 +201,7 @@ public sealed class SetupForm : Form
 
         foreach (var button in _presetButtons)
         {
-            var preset = int.Parse(button.Name.AsSpan("preset".Length, button.Name.Length - "presetButton".Length));
+            var preset = (int)button.Tag!;
             button.Enabled = CanEditDuration;
             button.UseVisualStyleBackColor = false;
             button.BackColor = preset == _durationModel.SelectedMinutes

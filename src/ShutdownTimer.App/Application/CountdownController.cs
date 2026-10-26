@@ -60,6 +60,12 @@ public sealed class CountdownController
             ErrorMessage = exception.Message;
             return false;
         }
+        catch (Exception exception)
+        {
+            State = CountdownControllerState.Idle;
+            ErrorMessage = $"Could not schedule Windows shutdown: {exception.Message}";
+            return false;
+        }
 
         if (!result.Succeeded)
         {
