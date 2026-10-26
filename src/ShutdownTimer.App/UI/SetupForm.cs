@@ -14,8 +14,9 @@ public sealed class SetupForm : Form
     private readonly Button _incrementButton;
     private readonly Button _startButton;
     private readonly Button[] _presetButtons;
-    private readonly System.Windows.Forms.Timer _countdownTimer;
     private bool _startInProgress;
+
+    public event EventHandler? ShutdownScheduled;
 
     public SetupForm(DurationSelectionModel durationModel, CountdownController countdownController)
     {
@@ -141,13 +142,6 @@ public sealed class SetupForm : Form
             _statusLabel
         ]);
 
-        _countdownTimer = new System.Windows.Forms.Timer
-        {
-            Interval = 1000
-        };
-        _countdownTimer.Tick += OnCountdownTimerTick;
-        FormClosed += (_, _) => _countdownTimer.Dispose();
-
         UpdateDurationControls();
     }
 
@@ -249,22 +243,11 @@ public sealed class SetupForm : Form
         }
 
         UpdateDurationControls();
-        _countdownTimer.Start();
         UpdateCountdownStatus();
+        ShutdownScheduled?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnCountdownTimerTick(object? sender, EventArgs e)
-    {
-        _countdownController.Refresh();
-        UpdateCountdownStatus();
-
-        if (_countdownController.State == CountdownControllerState.ZeroReached)
-        {
-            _countdownTimer.Stop();
-        }
-    }
-
-    private void UpdateCountdownStatus()
+    internal void UpdateCountdownStatus()
     {
         var remaining = CountdownFormatter.Format(_countdownController.Remaining);
 
