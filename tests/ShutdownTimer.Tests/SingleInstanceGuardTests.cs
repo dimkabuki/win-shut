@@ -1,5 +1,5 @@
-using Xunit;
 using ShutdownTimer.App.WindowsIntegration;
+using Xunit;
 
 namespace ShutdownTimer.Tests;
 
