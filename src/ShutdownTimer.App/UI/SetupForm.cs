@@ -41,7 +41,7 @@ public sealed class SetupForm : Form
             Name = "headingLabel",
             Location = new Point(24, 18),
             Size = new Size(472, 34),
-            Font = CreateOwnedFont(Font.FontFamily, 17F, FontStyle.Bold),
+            Font = CreateOwnedFont("Segoe UI", 17F, FontStyle.Bold),
             Text = "Schedule shutdown",
             TextAlign = ContentAlignment.MiddleLeft
         };
@@ -80,7 +80,7 @@ public sealed class SetupForm : Form
             Name = "selectedDurationLabel",
             Location = new Point(24, 139),
             Size = new Size(472, 38),
-            Font = CreateOwnedFont(Font.FontFamily, 21F, FontStyle.Bold),
+            Font = CreateOwnedFont("Segoe UI", 21F, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter
         };
 
@@ -114,7 +114,7 @@ public sealed class SetupForm : Form
 
         _startButton = CreateButton("Start shutdown timer", "startButton", new Size(250, 44));
         _startButton.Location = new Point(135, 361);
-        _startButton.Font = CreateOwnedFont(Font.FontFamily, 10F, FontStyle.Bold);
+        _startButton.Font = CreateOwnedFont("Segoe UI", 10F, FontStyle.Bold);
         _startButton.Click += OnStartClicked;
 
         _statusLabel = new Label
@@ -152,12 +152,21 @@ public sealed class SetupForm : Form
         if (disposing && !_resourcesDisposed)
         {
             _resourcesDisposed = true;
-            foreach (var font in _ownedFonts)
+            try
             {
-                font.Dispose();
+                base.Dispose(disposing);
+            }
+            finally
+            {
+                foreach (var font in _ownedFonts)
+                {
+                    font.Dispose();
+                }
+
+                _ownedFonts.Clear();
             }
 
-            _ownedFonts.Clear();
+            return;
         }
 
         base.Dispose(disposing);
@@ -166,13 +175,6 @@ public sealed class SetupForm : Form
     private Font CreateOwnedFont(string familyName, float size, FontStyle style)
     {
         var font = new Font(familyName, size, style);
-        _ownedFonts.Add(font);
-        return font;
-    }
-
-    private Font CreateOwnedFont(FontFamily family, float size, FontStyle style)
-    {
-        var font = new Font(family, size, style);
         _ownedFonts.Add(font);
         return font;
     }
