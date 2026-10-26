@@ -1,17 +1,18 @@
 # win-shut
 
-A small Windows-only desktop utility that schedules a forced shutdown through the built-in Windows `shutdown.exe` and displays a compact countdown.
+A small Windows-only desktop utility that schedules a forced shutdown through the built-in Windows `shutdown.exe` and displays an **approximate local countdown**.
 
-**Current scope:** repository bootstrap, product specification, architecture decision, and CI. The timer UI and shutdown integration are not implemented yet.
+**Current scope:** repository bootstrap, product specification, architecture and CI. The timer UI and shutdown integration are not implemented yet.
 
 ## Product constraints
 
 - Windows 10 x64 initially; C# / .NET 10 / Windows Forms.
 - No account, remote control, cloud service, telemetry, network requests, service, installer, or elevation.
 - Windows owns shutdown timing. The app requests `shutdown.exe /s /f /t <seconds>`.
+- The countdown is informational and approximate. The app does not monitor Windows shutdown state or detect external cancellation such as `shutdown /a`.
+- The last three minutes use a seconds display; the final 30 seconds use a subtle red text pulse.
 - `/f` is intentional: apps may terminate without save prompts and unsaved data can be lost.
 - No in-app cancellation button and no app-side invocation of `shutdown /a`.
-- External cancellation should return the UI to idle only after its Windows signal is validated.
 - CI tests run only for PRs targeting `main`; EXE publishing is manual-only.
 
 ## Project documentation
