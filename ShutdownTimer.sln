@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShutdownTimer.App", "src\ShutdownTimer.App\ShutdownTimer.App.csproj", "{1A46E0E8-2B7C-4B59-9A9F-8AFD246A1C01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShutdownTimer.Tests", "tests\ShutdownTimer.Tests\ShutdownTimer.Tests.csproj", "{BBA8B554-E1C7-4D27-9B1C-3522D7C4577A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A46E0E8-2B7C-4B59-9A9F-8AFD246A1C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A46E0E8-2B7C-4B59-9A9F-8AFD246A1C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A46E0E8-2B7C-4B59-9A9F-8AFD246A1C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A46E0E8-2B7C-4B59-9A9F-8AFD246A1C01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA8B554-E1C7-4D27-9B1C-3522D7C4577A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA8B554-E1C7-4D27-9B1C-3522D7C4577A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA8B554-E1C7-4D27-9B1C-3522D7C4577A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA8B554-E1C7-4D27-9B1C-3522D7C4577A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
