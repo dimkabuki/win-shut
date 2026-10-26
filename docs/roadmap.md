@@ -6,7 +6,7 @@ The app only requests a shutdown and displays an **approximate local countdown**
 
 ## PR-001 - specification, scaffold and CI bootstrap
 
-**Status:** Current PR #1 is open.
+**Status:** Merged as PR #1 on 2026-10-26.
 
 Scope:
 - Product requirements, architecture decision, agent instructions and session hand-off.
@@ -35,6 +35,13 @@ Acceptance:
 - 180 seconds and below use `MM:SS`: 180 s => `03:00`, 59 s => `00:59`.
 - 1-30 seconds are classified as warning; zero displays `00:00` and is not classified as warning.
 - Unit tests cover boundaries, rounding, invalid inputs and formatting. No UI or process execution is introduced.
+
+**Implementation delivered by PR #2:**
+- `DurationSelectionModel` exposes the selected minutes and step availability, accepts only the 15/30/45 minute presets, and clamps step operations at 5-180 minutes.
+- `CountdownFormatter` implements invariant minute rounding and `MM:SS` formatting, clamping zero/negative durations to `00:00`.
+- `CountdownVisualState.IsFinalSecondsWarningActive` classifies only remaining durations from 1 through 30 seconds as warning-active.
+- xUnit coverage replaces the smoke-only suite with deterministic model, formatter and classifier boundary tests. Tests do not sleep, start processes, or execute `shutdown.exe`.
+- Local format/build/test commands could not be run because this authoring environment has no .NET SDK. The PR's required Windows `verify` check is the source of truth for CI validation.
 
 ## PR-003 - safe Windows shutdown command runner
 

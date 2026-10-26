@@ -24,6 +24,6 @@ internal static class Program
             TextAlign = ContentAlignment.MiddleCenter
         });
 
-        Application.Run(form);
+        System.Windows.Forms.Application.Run(form);
     }
 }
