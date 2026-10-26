@@ -19,14 +19,8 @@ Actions use stable major tags; review official release notes when updating them.
 | Merge/push to `main` | No additional run | No |
 | Manual `workflow_dispatch` | No PR check | Yes |
 
-## Repository settings to configure after initial merge
+## Current main ruleset
 
-- Protect `main` against direct pushes and force pushes.
-- Require PRs before merging.
-- Require status check `CI / verify`.
-- If this is a solo-maintained repo, do not require an approval the author cannot provide. Add one approval if another reviewer is available.
-- Consider requiring branches to be up to date before merge.
-- Avoid admin bypass unless intentionally desired.
-- Ensure GitHub Actions are enabled in repository settings; workflows need no secrets.
+The repository currently has an active ruleset named `protect-main` targeting the default branch. It requires a pull request and the `verify` status check, blocks branch deletion and force pushes, allows squash merge only, and has no bypass actors. Required approvals are set to zero for solo maintenance.
 
-Branch protection/rulesets are repository settings, not something workflow YAML can enforce.
+Review it at [Settings / Rulesets](https://github.com/dimkabuki/win-shut/rules/25879952). Repository rulesets are configuration, not something workflow YAML can enforce. If repository ownership or team structure changes, revisit approval requirements and review-thread resolution.
