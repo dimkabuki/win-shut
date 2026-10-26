@@ -2,7 +2,7 @@
 
 A small Windows-only desktop utility that schedules a forced shutdown through the built-in Windows `shutdown.exe` and displays an **approximate local countdown**.
 
-**Current implementation:** the setup window can request a forced shutdown; a notification-area menu and separate approximate countdown overlay provide access to the running countdown. Single-instance protection and additional lifecycle hardening remain planned; see the roadmap.
+**Current implementation:** the setup window can request a forced shutdown; a notification-area menu and separate approximate countdown overlay provide access to the running countdown. A named-mutex guard prevents a second process from scheduling another shutdown; lifecycle cleanup is centralized.
 
 ## Product constraints
 
@@ -26,4 +26,4 @@ A small Windows-only desktop utility that schedules a forced shutdown through th
 - [Project status / session hand-off](docs/status.md)
 - [ADR-0001: stack choice](docs/decisions/ADR-0001-stack.md)
 
-The setup window, notification-area icon and separate countdown overlay are implemented; single-instance protection and remaining lifecycle hardening are still outstanding. The countdown is only an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.
+The setup window, notification-area icon, countdown overlay, single-instance guard and centralized lifecycle cleanup are implemented. Manual Windows validation remains outstanding. The countdown is only an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.

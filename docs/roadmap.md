@@ -121,6 +121,8 @@ Acceptance:
 
 ## PR-006 - tray icon and countdown overlay
 
+**Status:** Merged as PR #6 on 2026-10-26. Squash merge commit: `4de4cc87fe6cd74366c7cb5bdf72f567604880a5`. Required Windows CI passed format verification, Release build, and 59/59 tests: https://github.com/dimkabuki/win-shut/actions/runs/40379311632
+
 **Suggested branch:** `feature/countdown-overlay`
 
 Scope:
@@ -146,6 +148,8 @@ Acceptance:
 
 ## PR-007 - lifecycle, single-instance behaviour and cleanup
 
+**Status:** Implementation on `fix/app-lifecycle`; required Windows CI and squash merge pending.
+
 **Suggested branch:** `fix/app-lifecycle`
 
 Scope:
@@ -158,6 +162,15 @@ Acceptance:
 - Timers, event handlers, forms and tray resources are disposed deterministically.
 - Closing the app does not invoke `shutdown /a`; the OS shutdown request remains independent of app lifetime.
 - Restart recovery and persistence of an existing OS timer are explicitly out of scope; a new process does not infer the state of Windows shutdown.
+
+**Implementation in PR #7:**
+- Acquire a named mutex before constructing the UI; a duplicate launch displays an informational message and exits without scheduling shutdown.
+- Hold the mutex until the message loop ends and release it on the acquiring thread.
+- Centralize tray timer, NotifyIcon, menu, event-handler and form cleanup behind an idempotent exit path.
+- On user close, preserve the existing hide-to-tray behavior. On Windows/session/application close reasons, release UI resources and allow closure without vetoing or delaying system shutdown.
+- Dispose overlay and setup form-owned fonts/timers even when forms are disposed before being shown.
+- Add tests for duplicate mutex acquisition, disposal/reacquisition and invalid names. No automated test starts a process or runs shutdown.exe.
+- Manual Windows lifecycle validation remains unperformed; the PR must state that explicitly.
 
 ## PR-008 - Windows validation, packaging and release hand-off
 

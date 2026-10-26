@@ -14,6 +14,7 @@ public sealed class TrayController : ApplicationContext
     private readonly System.Windows.Forms.Timer _countdownTimer;
     private readonly ToolStripMenuItem _showCountdownItem;
     private bool _isExiting;
+    private bool _cleanupStarted;
 
     public TrayController(
         SetupForm setupForm,
@@ -56,8 +57,23 @@ public sealed class TrayController : ApplicationContext
         _setupForm.Show();
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Cleanup(closeForms: true);
+        }
+
+        base.Dispose(disposing);
+    }
+
     private void OnShutdownScheduled(object? sender, EventArgs e)
     {
+        if (_isExiting)
+        {
+            return;
+        }
+
         _showCountdownItem.Enabled = true;
         _setupForm.Hide();
         UpdateCountdownPresentation();
@@ -87,6 +103,11 @@ public sealed class TrayController : ApplicationContext
 
     private void ShowSetup()
     {
+        if (_isExiting)
+        {
+            return;
+        }
+
         if (_setupForm.WindowState == FormWindowState.Minimized)
         {
             _setupForm.WindowState = FormWindowState.Normal;
@@ -99,7 +120,7 @@ public sealed class TrayController : ApplicationContext
 
     private void ShowCountdown()
     {
-        if (_countdownController.State == CountdownControllerState.Idle)
+        if (_isExiting || _countdownController.State == CountdownControllerState.Idle)
         {
             return;
         }
@@ -123,16 +144,26 @@ public sealed class TrayController : ApplicationContext
 
     private void OnFormClosing(object? sender, FormClosingEventArgs e)
     {
-        if (_isExiting || e.CloseReason != CloseReason.UserClosing)
+        if (_isExiting)
         {
             return;
         }
 
-        e.Cancel = true;
-        if (sender is Form form)
+        if (e.CloseReason == CloseReason.UserClosing)
         {
-            form.Hide();
+            e.Cancel = true;
+            if (sender is Form form)
+            {
+                form.Hide();
+            }
+
+            return;
         }
+
+        // Do not cancel or delay system/session shutdown. Release UI resources
+        // and let Windows close the remaining forms normally.
+        Cleanup(closeForms: false);
+        ExitThread();
     }
 
     private void ExitApplication()
@@ -142,17 +173,58 @@ public sealed class TrayController : ApplicationContext
             return;
         }
 
+        Cleanup(closeForms: true);
+        ExitThread();
+    }
+
+    private void Cleanup(bool closeForms)
+    {
+        if (_cleanupStarted)
+        {
+            return;
+        }
+
+        _cleanupStarted = true;
         _isExiting = true;
+
+        _setupForm.ShutdownScheduled -= OnShutdownScheduled;
+        _setupForm.FormClosing -= OnFormClosing;
+        _overlayForm.FormClosing -= OnFormClosing;
+        _notifyIcon.DoubleClick -= OnTrayIconDoubleClick;
+        _countdownTimer.Tick -= OnCountdownTimerTick;
+
         _countdownTimer.Stop();
-
-        _setupForm.Close();
-        _overlayForm.Close();
-
-        _notifyIcon.Visible = false;
-        _notifyIcon.Dispose();
-        _trayMenu.Dispose();
         _countdownTimer.Dispose();
 
-        ExitThread();
+        _notifyIcon.Visible = false;
+        _notifyIcon.ContextMenuStrip = null;
+        _notifyIcon.Dispose();
+        _trayMenu.Dispose();
+
+        if (closeForms)
+        {
+            CloseAndDispose(_setupForm);
+            CloseAndDispose(_overlayForm);
+        }
+    }
+
+    private static void CloseAndDispose(Form form)
+    {
+        if (form.IsDisposed)
+        {
+            return;
+        }
+
+        try
+        {
+            form.Close();
+        }
+        finally
+        {
+            if (!form.IsDisposed)
+            {
+                form.Dispose();
+            }
+        }
     }
 }

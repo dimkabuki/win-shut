@@ -14,7 +14,9 @@ public sealed class SetupForm : Form
     private readonly Button _incrementButton;
     private readonly Button _startButton;
     private readonly Button[] _presetButtons;
+    private readonly List<Font> _ownedFonts = [];
     private bool _startInProgress;
+    private bool _resourcesDisposed;
 
     public event EventHandler? ShutdownScheduled;
 
@@ -30,7 +32,7 @@ public sealed class SetupForm : Form
         MinimizeBox = true;
         ShowInTaskbar = true;
         ClientSize = new Size(520, 516);
-        Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+        Font = CreateOwnedFont("Segoe UI", 9F, FontStyle.Regular);
         MinimumSize = Size;
         AccessibleName = "win-shut shutdown timer setup";
 
@@ -39,7 +41,7 @@ public sealed class SetupForm : Form
             Name = "headingLabel",
             Location = new Point(24, 18),
             Size = new Size(472, 34),
-            Font = new Font(Font.FontFamily, 17F, FontStyle.Bold),
+            Font = CreateOwnedFont(Font.FontFamily, 17F, FontStyle.Bold),
             Text = "Schedule shutdown",
             TextAlign = ContentAlignment.MiddleLeft
         };
@@ -78,7 +80,7 @@ public sealed class SetupForm : Form
             Name = "selectedDurationLabel",
             Location = new Point(24, 139),
             Size = new Size(472, 38),
-            Font = new Font(Font.FontFamily, 21F, FontStyle.Bold),
+            Font = CreateOwnedFont(Font.FontFamily, 21F, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter
         };
 
@@ -112,7 +114,7 @@ public sealed class SetupForm : Form
 
         _startButton = CreateButton("Start shutdown timer", "startButton", new Size(250, 44));
         _startButton.Location = new Point(135, 361);
-        _startButton.Font = new Font(Font.FontFamily, 10F, FontStyle.Bold);
+        _startButton.Font = CreateOwnedFont(Font.FontFamily, 10F, FontStyle.Bold);
         _startButton.Click += OnStartClicked;
 
         _statusLabel = new Label
@@ -143,6 +145,34 @@ public sealed class SetupForm : Form
         ]);
 
         UpdateDurationControls();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !_resourcesDisposed)
+        {
+            _resourcesDisposed = true;
+            foreach (var font in _ownedFonts)
+            {
+                font.Dispose();
+            }
+
+            _ownedFonts.Clear();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private Font CreateOwnedFont(string familyName, float size, FontStyle style)
+    {
+        return CreateOwnedFont(new FontFamily(familyName), size, style);
+    }
+
+    private Font CreateOwnedFont(FontFamily family, float size, FontStyle style)
+    {
+        var font = new Font(family, size, style);
+        _ownedFonts.Add(font);
+        return font;
     }
 
     private Button CreatePresetButton(int minutes)

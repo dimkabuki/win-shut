@@ -21,6 +21,7 @@ public sealed class CountdownOverlayForm : Form
     private string _countdownText = "--:--";
     private Color _countdownColor = Color.WhiteSmoke;
     private bool _pulseBright;
+    private bool _resourcesDisposed;
 
     public CountdownOverlayForm()
     {
@@ -43,13 +44,22 @@ public sealed class CountdownOverlayForm : Form
             Interval = 500
         };
         _pulseTimer.Tick += OnPulseTimerTick;
-        FormClosed += (_, _) =>
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !_resourcesDisposed)
         {
+            _resourcesDisposed = true;
+            _pulseTimer.Stop();
+            _pulseTimer.Tick -= OnPulseTimerTick;
             _pulseTimer.Dispose();
             _captionFont.Dispose();
             _countdownFont.Dispose();
             _hideFont.Dispose();
-        };
+        }
+
+        base.Dispose(disposing);
     }
 
     public void UpdateCountdownStatus(TimeSpan remaining, bool zeroReached)
