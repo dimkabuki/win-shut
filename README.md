@@ -2,7 +2,7 @@
 
 A small Windows-only desktop utility that schedules a forced shutdown through the built-in Windows `shutdown.exe` and displays an **approximate local countdown**.
 
-**Current scope:** repository bootstrap, product specification, architecture and CI. The timer UI and shutdown integration are not implemented yet.
+**Current implementation:** the setup window can request a forced shutdown and displays an approximate local countdown after the request succeeds. The notification-area icon and separate countdown overlay are not implemented yet; see the roadmap.
 
 ## Product constraints
 
@@ -26,4 +26,4 @@ A small Windows-only desktop utility that schedules a forced shutdown through th
 - [Project status / session hand-off](docs/status.md)
 - [ADR-0001: stack choice](docs/decisions/ADR-0001-stack.md)
 
-This is not yet a usable timer application. The first PR contains a minimal WinForms/test scaffold so CI can build a real solution.
+The setup window is implemented, but the tray icon, separate countdown overlay and lifecycle hardening remain outstanding. The countdown is only an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.

@@ -110,6 +110,13 @@ Acceptance:
 - The UI explains that forced shutdown can lose unsaved work and that the displayed countdown is approximate; external cancellation is not detected.
 - Manual UI checks and any automated tests are recorded in the PR.
 
+**Implementation delivered by PR #5:**
+- Replace the bootstrap window with a fixed WinForms setup form, exact 15/30/45 presets, selected duration, and bounded +/-5-minute controls.
+- Connect Start to the existing countdown controller and Windows shutdown scheduler. Disable duration selection and Start while submission is in progress and after scheduling succeeds.
+- Show operational failures in the setup window and keep the form available for retry. On success, display the approximate countdown in the setup window until the tray/overlay step is implemented.
+- Keep forced-shutdown/data-loss and external-cancellation/approximation warnings visible at all times.
+- No automated test invokes the real shutdown command. Manual UI validation is recorded as not performed in this authoring environment; check PR #5 for the required Windows CI result.
+
 ## PR-006 - tray icon and countdown overlay
 
 **Suggested branch:** `feature/countdown-overlay`
