@@ -1,3 +1,4 @@
+using Xunit;
 using ShutdownTimer.App.WindowsIntegration;
 
 namespace ShutdownTimer.Tests;
