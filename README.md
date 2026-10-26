@@ -1,3 +1,28 @@
 # win-shut
 
-Windows shutdown timer utility. Project specification and implementation workflow will be added through pull requests.
+A small Windows-only desktop utility that schedules a forced shutdown through the built-in Windows `shutdown.exe` and displays a compact countdown.
+
+**Current scope:** repository bootstrap, product specification, architecture decision, and CI. The timer UI and shutdown integration are not implemented yet.
+
+## Product constraints
+
+- Windows 10 x64 initially; C# / .NET 10 / Windows Forms.
+- No account, remote control, cloud service, telemetry, network requests, service, installer, or elevation.
+- Windows owns shutdown timing. The app requests `shutdown.exe /s /f /t <seconds>`.
+- `/f` is intentional: apps may terminate without save prompts and unsaved data can be lost.
+- No in-app cancellation button and no app-side invocation of `shutdown /a`.
+- External cancellation should return the UI to idle only after its Windows signal is validated.
+- CI tests run only for PRs targeting `main`; EXE publishing is manual-only.
+
+## Project documentation
+
+- [Agent instructions](AGENTS.md)
+- [Product requirements and acceptance criteria](docs/requirements.md)
+- [Architecture](docs/architecture.md)
+- [Testing strategy](docs/testing.md)
+- [CI and repository settings](docs/ci.md)
+- [Implementation roadmap](docs/roadmap.md)
+- [Project status / session hand-off](docs/status.md)
+- [ADR-0001: stack choice](docs/decisions/ADR-0001-stack.md)
+
+This is not yet a usable timer application. The first PR contains a minimal WinForms/test scaffold so CI can build a real solution.
