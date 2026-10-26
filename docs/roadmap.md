@@ -45,6 +45,8 @@ Acceptance:
 
 ## PR-003 - safe Windows shutdown command runner
 
+**Status:** Implemented in PR #3; see the current required `verify` check on the pull request.
+
 **Suggested branch:** `feature/shutdown-runner`
 
 Scope:
@@ -58,6 +60,13 @@ Acceptance:
 - Tests cover launch exceptions and non-zero exit codes through a fake runner.
 - Automated tests cannot execute the real Windows shutdown command.
 - The PR does not add any event-log watcher or shutdown-state detection.
+
+**Implementation delivered by PR #3:**
+- `IProcessLauncher` provides a small injectable process boundary; `SystemProcessLauncher` waits for the launched process to exit.
+- `ShutdownScheduler` resolves the system `shutdown.exe`, configures `UseShellExecute = false` and `CreateNoWindow = true`, and supplies `/s`, `/f`, `/t`, and invariant integer seconds as separate arguments.
+- Durations are validated against the existing 5-180 minute range and five-minute step. A zero exit code is success; launch exceptions and non-zero exits return an explicit failure result.
+- Tests use only a fake launcher to verify the executable path, argument vector, invocation flags, invalid durations, launch failures and non-zero exit codes. No test launches a process or executes real shutdown.
+- The required `verify` check is the authority for format/build/test state; inspect the latest run linked from PR #3 before merge. Local .NET checks were unavailable in this authoring environment.
 
 ## PR-004 - local countdown controller
 
