@@ -24,6 +24,7 @@ A small Windows-only desktop utility that schedules a forced shutdown through th
 - [CI and repository settings](docs/ci.md)
 - [Implementation roadmap](docs/roadmap.md)
 - [Project status / session hand-off](docs/status.md)
+- [Windows release validation checklist](docs/release-validation.md)
 - [ADR-0001: stack choice](docs/decisions/ADR-0001-stack.md)
 
-The setup window, notification-area icon, countdown overlay, single-instance guard and centralized lifecycle cleanup are implemented. Manual Windows validation remains outstanding. The countdown is only an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.
+The setup window, notification-area icon, countdown overlay, single-instance guard and centralized lifecycle cleanup are implemented. Automated CI has passed through PR #7; manual Windows validation and verification of the published artifact remain outstanding. The countdown is only an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.
