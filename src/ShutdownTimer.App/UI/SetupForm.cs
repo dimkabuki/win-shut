@@ -153,7 +153,7 @@ public sealed class SetupForm : Form
 
     private Button CreatePresetButton(int minutes)
     {
-        var button = CreateButton($"{minutes} min", $"preset{minutes}Button", new Size(148, 38));
+        var button = CreateButton($"{minutes} min", $"preset{minutes}Button", new Size(140, 38));
         button.Margin = new Padding(0, 0, 12, 0);
         button.Tag = minutes;
         button.Click += (_, _) =>
