@@ -17,6 +17,7 @@
 - Use imperative Conventional Commit subjects, e.g. `feat: add countdown formatter`.
 - Do not amend, reset, or rebase user-owned commits unless explicitly requested.
 - Keep PRs small and reviewable. Do not add secrets, credentials, personal data, or machine-specific paths.
+- Do not start a dependent roadmap item until the previous item has merged.
 
 ## Implementation constraints
 
@@ -25,11 +26,12 @@
 - Resolve it with `Path.Combine(Environment.SystemDirectory, "shutdown.exe")`.
 - Launch without a shell and pass separate arguments: `/s`, `/f`, `/t`, seconds.
 - Never expose an in-app cancel action or invoke `shutdown /a` from the app.
+- The countdown is approximate. Do not poll Windows, read event logs, or otherwise detect or infer actual shutdown state or external cancellation. Do not restore a presumed active OS timer after an app restart.
 - Never veto or delay Windows shutdown, reject `WM_QUERYENDSESSION`, or register a shutdown-block reason.
 - Do not require elevation, install a service/task, auto-start, or contact network services.
-- Keep process execution and OS event observation behind small injectable interfaces.
+- Keep process execution behind a small injectable interface and timing/formatting logic deterministic in tests.
 - Never run real shutdown in CI or automated tests.
-- Candidate abort signal: System event log provider `User32`, event ID `1075`. Validate event semantics and read permissions on Windows 10 before relying on it. If unreliable, document evidence rather than using undocumented APIs or parsing localized console output.
+- Do not introduce shutdown-state monitoring, event watchers or app-side cancellation unless the product requirements and scope are explicitly changed.
 
 ## Validation
 
