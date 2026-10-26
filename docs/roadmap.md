@@ -148,7 +148,7 @@ Acceptance:
 
 ## PR-007 - lifecycle, single-instance behaviour and cleanup
 
-**Status:** Implementation on `fix/app-lifecycle`; required Windows CI and squash merge pending.
+**Status:** Merged as PR #7 on 2026-10-26. Squash merge commit: `e7826c3205ad8d072700aa7d12e20750e49b20ac`. Required Windows CI passed format verification, Release build, and 61/61 tests with zero warnings: https://github.com/dimkabuki/win-shut/actions/runs/40386849399
 
 **Suggested branch:** `fix/app-lifecycle`
 
@@ -174,17 +174,22 @@ Acceptance:
 
 ## PR-008 - Windows validation, packaging and release hand-off
 
+**Status:** In progress on `test/windows-release-validation`.
+
 **Suggested branch:** `test/windows-release-validation`
 
 Scope:
-- Verify the self-contained single-file `win-x64` artifact and complete the manual Windows validation checklist.
-- Update usage, limitations, test evidence and release instructions.
+- Verify the manually triggered self-contained single-file `win-x64` artifact.
+- Complete the Windows UI, lifecycle and shutdown checklist in [release validation](release-validation.md).
+- Keep observed automated evidence separate from unperformed manual tests.
 
 Acceptance:
+- The manual build workflow succeeds and uploads the expected EXE.
 - The EXE launches on a clean Windows 10 x64 environment without a separately installed .NET Desktop Runtime.
 - As a standard user, presets, command failure handling, overlay movement/visibility, tray actions, approximate countdown and last-30-second warning are checked.
 - In an isolated disposable VM or test session, confirm external `shutdown /a` is intentionally not detected and the local display continues to zero. Confirm `/f` only in a disposable environment with no valuable unsaved work.
 - Manual evidence records Windows edition/build and user privilege level; no result is claimed without observation.
+- Any remaining manual-only checks are explicitly listed in the final hand-off.
 - CI remains limited to build/tests; neither automated tests nor CI execute real shutdown.
 
 ## Cross-PR rules
