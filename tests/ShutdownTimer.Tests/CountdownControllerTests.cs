@@ -56,6 +56,24 @@ public sealed class CountdownControllerTests
     }
 
     [Fact]
+    public async Task UnexpectedSchedulingExceptionLeavesControllerIdleAndReportsFailure()
+    {
+        var clock = new FakeClock();
+        var launcher = new FakeProcessLauncher
+        {
+            ExceptionToThrow = new NotSupportedException("process launcher unavailable")
+        };
+        var controller = CreateController(clock, launcher);
+
+        var started = await controller.StartAsync(15);
+
+        Assert.False(started);
+        Assert.Equal(CountdownControllerState.Idle, controller.State);
+        Assert.Contains("Could not schedule Windows shutdown", controller.ErrorMessage, StringComparison.Ordinal);
+        Assert.Contains("process launcher unavailable", controller.ErrorMessage, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task RemainingUsesElapsedTimeRatherThanTickCount()
     {
         var clock = new FakeClock();
