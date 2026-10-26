@@ -18,15 +18,15 @@ Add coverage as features are implemented:
 
 ## Manual Windows 10 validation
 
-Perform after saving all work, ideally in a disposable VM/test account with no valuable unsaved data.
+Perform in a disposable VM/test account with no valuable unsaved data. External-cancellation and app-exit checks are separate trials.
 
 1. Launch as a standard non-admin user on Windows 10 x64.
 2. Check selected duration, command arguments and error handling.
 3. Confirm successful start hides setup to tray and shows a movable, topmost overlay.
 4. Verify minute/second formatting and the subtle red text pulse in the final 30 seconds; confirm that animation stops at `00:00`.
 5. Move/hide/show the overlay and confirm these actions do not cancel shutdown.
-6. Exit the app and verify that the UI closes while the OS shutdown request remains scheduled.
-7. In the disposable test environment, run `shutdown /a` from a separate terminal and verify that the app does not detect this cancellation; its local countdown continues to zero by design.
+6. **External-cancellation trial:** while the app and countdown remain visible, run `shutdown /a` from a separate terminal. Confirm the app does not detect this cancellation and the local countdown continues by design. Use a controlled test seam if waiting to zero would be impractical.
+7. **App-exit trial:** in a fresh run, schedule another timer and exit the app. Then run `shutdown /a` from a separate terminal; a successful abort confirms that exiting the app did not cancel the OS request. Do not rely on an app display after the app has exited.
 8. Confirm a second launch does not start another timer while the first instance is running.
 9. Confirm the app does not veto OS shutdown notifications.
 10. For the force-close check, use a disposable session and an app with deliberately unsaved test data; verify that `/f` closes it without prompting. Data loss is expected.
