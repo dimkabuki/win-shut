@@ -53,10 +53,19 @@ public sealed class CountdownOverlayForm : Form
             _resourcesDisposed = true;
             _pulseTimer.Stop();
             _pulseTimer.Tick -= OnPulseTimerTick;
-            _pulseTimer.Dispose();
-            _captionFont.Dispose();
-            _countdownFont.Dispose();
-            _hideFont.Dispose();
+            try
+            {
+                base.Dispose(disposing);
+            }
+            finally
+            {
+                _pulseTimer.Dispose();
+                _captionFont.Dispose();
+                _countdownFont.Dispose();
+                _hideFont.Dispose();
+            }
+
+            return;
         }
 
         base.Dispose(disposing);
