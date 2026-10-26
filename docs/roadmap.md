@@ -70,6 +70,8 @@ Acceptance:
 
 ## PR-004 - local countdown controller
 
+**Status:** Implemented in PR #4; see the required `verify` result linked from the PR.
+
 **Suggested branch:** `feature/countdown-controller`
 
 Scope:
@@ -84,6 +86,13 @@ Acceptance:
 - At zero, the display stays at `00:00` without warning animation; the app does not claim that Windows has shut down.
 - The controller never polls Windows, watches event logs, attempts to detect external cancellation or calls `shutdown /a`.
 - Unit tests use a fake runner and controllable clock; no real shutdown is invoked.
+
+**Implementation delivered by PR #4:**
+- Add an injectable monotonic clock contract and a production `Stopwatch` implementation.
+- Add a controller state machine: Idle, Starting, ActiveCountdown, and ZeroReached.
+- Start the countdown only after the scheduler reports success; scheduling failures leave the controller idle with an error.
+- Compute remaining duration from elapsed monotonic time, not refresh/tick counts. Reaching zero is a stable display state and does not assert that Windows has shut down.
+- Deterministic tests use a fake clock and fake process launcher. They never start a process or invoke `shutdown.exe`.
 
 ## PR-005 - setup window and duration controls
 

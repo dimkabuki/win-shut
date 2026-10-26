@@ -11,7 +11,7 @@ Add coverage as features are implemented:
 - Countdown formatting: 181 s => `4 min`; 180 s => `03:00`; 61 s => `01:01`; 60 s => `01:00`; 59 s => `00:59`; zero/negative => `00:00`.
 - Visual-state boundaries: 31 s is not warning; 30 s and 1 s are warning; zero is static/non-warning.
 - Scheduler executable path and separated args; process start failure and non-zero exit. PR #3 tests these through a fake launcher only; no test starts a process.
-- State transitions, duplicate-start rejection, monotonic elapsed-time calculations and failure handling.
+- PR #4 covers state transitions, duplicate-start rejection, monotonic elapsed-time calculations and failure handling using a fake clock and fake process launcher; no test starts a process.
 - Hiding/exiting never calls `shutdown /a`.
 - Use an injected fake process launcher and controllable clock; tests must not execute the actual `shutdown.exe`.
 - No tests should assert that an external OS cancellation is detected. The product intentionally does not monitor that state.
