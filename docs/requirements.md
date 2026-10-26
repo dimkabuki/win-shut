@@ -2,63 +2,60 @@
 
 ## Goal and scope
 
-Build a small Windows-only UI on top of the existing Windows shutdown timer. The app schedules an OS-level shutdown, shows a movable countdown overlay, and returns to idle when external `shutdown /a` cancellation is detected reliably.
+Build a small Windows-only utility that requests a forced shutdown through the built-in Windows `shutdown.exe` command and displays an **approximate local countdown**.
 
-This is a convenience timer, not a tamper-resistant parental-control or security boundary.
+Windows owns the actual shutdown timer. The app does not query, monitor or synchronize with Windows shutdown state. It does not detect an external cancellation such as `shutdown /a`. Therefore, the countdown may continue after the OS timer has been canceled, and it may reach `00:00` without the machine shutting down. This limitation must be explained in the UI.
 
-In scope: Windows 10 x64 initially; setup UI with 15/30/45-minute presets, +/-5-minute step, Start, tray icon, draggable always-on-top countdown overlay, Windows shutdown integration, external-abort synchronization, automated tests, PR-only CI, manual EXE publish.
+This is a convenience utility, not a tamper-resistant parental-control or security boundary.
 
-Out of scope: remote management, accounts, cloud, telemetry, network, per-program limits, allow/block lists, PIN/password, kiosk mode, tamper resistance, service/task, admin install, registry policies, auto-start, in-app cancel, custom process killer, non-Windows platforms.
+In scope: Windows 10 x64 initially; C#/.NET 10/WinForms; duration presets and adjustments; a Start action; tray icon; draggable always-on-top countdown overlay; safe process invocation; deterministic tests; PR-only CI; manually triggered EXE publishing.
+
+Out of scope: shutdown-state detection, event-log watching, external-cancellation synchronization, in-app cancel/stop, remote management, accounts, cloud, telemetry, network, per-program limits, allow/block lists, PIN/password, kiosk mode, tamper resistance, service/task, admin install, registry policies, auto-start and non-Windows platforms.
 
 ## Setup UI
 
 - Preset buttons `15`, `30`, `45` set that exact value, not an increment.
 - Initial selection is 30 minutes.
 - `-5 min` and `+5 min` change the selected value in 5-minute steps.
-- Minimum 5 minutes and initial maximum 180 minutes; define limits as named constants.
+- Minimum is 5 minutes and initial maximum is 180 minutes; define limits as named constants.
 - Disable the corresponding step button at bounds; never wrap.
-- Disable/reject repeated Start while submitting or active.
-- Before first use, clearly warn that forced shutdown may lose unsaved data.
+- Disable/reject repeated Start while the scheduling command is being submitted or a local countdown is active.
+- Keep a clear warning visible before Start: forced shutdown may close apps without save prompts and unsaved work can be lost.
+- Explain before Start that the countdown is approximate and external cancellation is not detected.
 
 ## Active UI
 
-After scheduling succeeds, hide the setup window to the notification area and show a small borderless, draggable, always-on-top overlay. The overlay displays only the countdown and may have a hide-only control. Never expose Cancel/Stop in the app. Hiding or closing the overlay does not cancel shutdown.
+After the scheduling command succeeds, hide the setup window to the notification area and show a small borderless, draggable, always-on-top overlay. The overlay displays the countdown and may have a hide-only control. Never expose Cancel/Stop in the app. Hiding or closing the overlay does not cancel shutdown.
 
-Tray menu: `Show setup`, `Show countdown`, `Exit application`. Exiting the UI leaves Windows shutdown scheduled and this must be stated clearly. On a valid external abort, stop the countdown, hide overlay and restore idle setup UI.
+Tray menu: `Show setup`, `Show countdown`, `Exit application`. Exiting the app closes the UI but leaves the Windows shutdown scheduled. If the app exits or crashes, the countdown display is lost; the app does not restore or infer a previous Windows timer on restart.
 
-## Countdown formatting
+The overlay/tray tooltip must make it clear that the displayed countdown is only an estimate, not the confirmed Windows shutdown state. If shutdown is canceled externally, the local countdown continues; the UI does not react to that cancellation.
 
-- More than 180 seconds remaining: whole minutes only, rounded up; 181 s => `4 min`.
-- At 180 seconds or less: `MM:SS`; 180 s => `03:00`, 59 s => `00:59`.
+## Countdown timing and appearance
+
+- Derive remaining time from monotonic elapsed time, not by decrementing a counter once per timer tick.
+- Above 180 seconds remaining, show whole minutes rounded up. Example: 181 seconds => `4 min`.
+- At 180 seconds or less, show `MM:SS`. Examples: 180 seconds => `03:00`; 59 seconds => `00:59`.
+- During seconds 1-30 inclusive, apply a subtle red text-colour pulse, approximately once per second.
+- The pulse changes the text colour only. Do not flash the whole overlay, toggle window visibility, or animate the background.
+- At zero, show static `00:00`; stop the pulse. Do not imply that shutdown has completed or is still pending in Windows.
 - Never show negative time.
-- Derive time from monotonic elapsed time (e.g. `Stopwatch`), not a counter decremented on each tick.
-- Windows owns the real shutdown timing; the overlay is informational.
 
 ## Shutdown behaviour
 
-- Resolve executable as `Path.Combine(Environment.SystemDirectory, "shutdown.exe")`.
+- Resolve the executable as `Path.Combine(Environment.SystemDirectory, "shutdown.exe")`.
 - Use `ProcessStartInfo` with `UseShellExecute = false`, `CreateNoWindow = true`, and individual `ArgumentList` entries.
 - Exact args: `/s`, `/f`, `/t`, integer seconds. Presets map to 900, 1800 and 2700 seconds.
 - Do not invoke cmd.exe/PowerShell, shell-concatenate arguments, use `UseShellExecute = true`, or elevate.
-- Inspect launch exceptions and exit status. On failure, remain idle and show actionable error.
+- Handle launch exceptions and non-zero exit status. On failure, remain idle and show an actionable error. Start the local countdown only after the command has completed successfully.
 - Closing/crashing the UI must not cancel an already scheduled shutdown.
 - `/f` is mandatory and intentionally closes apps without save prompts; unsaved work can be lost.
 - Never veto, block or delay OS shutdown notifications.
-
-## External cancellation
-
-- User cancels externally, e.g. in Command Prompt/PowerShell using `shutdown /a`.
-- The app itself never invokes `shutdown /a`.
-- Candidate signal is a new System event-log event from provider `User32`, event ID `1075`.
-- Initialize the watcher/bookmark before scheduling and ignore historical events.
-- Only a fresh abort event observed while Active can return the UI to Idle.
-- Validate signal semantics on Windows 10 and read access as a normal non-admin user.
-- If signal is absent/unreliable/inaccessible, record evidence and stop before shipping this feature. Do not use undocumented NT APIs or parse localized console output as the primary signal.
-- If watcher initialization fails, do not start a timer that cannot synchronize cancellation state.
+- The app does not execute `shutdown /a` or attempt to detect whether a user ran that command elsewhere.
 
 ## Lifecycle and privacy
 
-Single-instance behaviour should activate the existing instance where practical. Handle process-start failures, non-zero exit, watcher errors, duplicate starts and disposal without unhandled exceptions. Dispose timers, watcher, tray icon and handlers. No network, accounts, telemetry, usage history, elevation, service, task, registry policy, or auto-start. Saving only the overlay position in current-user local app data is optional.
+Handle duplicate launches, duplicate Start requests, process-start failures, non-zero exit, disposal and tray/icon cleanup without unhandled exceptions. Use a single-instance guard so a second process does not silently schedule another timer. Restart recovery/persistence is not part of v1. Dispose timers, tray icon and handlers. No network, accounts, telemetry, usage history, elevation, service, task, registry policy or auto-start. Saving only the overlay position in current-user local app data is optional.
 
 ## Packaging and CI
 
@@ -68,11 +65,11 @@ Target `net10.0-windows`, publish self-contained single-file `win-x64`. PR CI tr
 
 - **AC-01 Presets:** 15/30/45 select exact value; +/- changes by five; bounds do not wrap.
 - **AC-02 Command:** 15/30/45 map to `/s /f /t 900`, `/s /f /t 1800`, `/s /f /t 2700`. Tests use a fake launcher.
-- **AC-03 Active UI:** successful scheduling hides setup to tray and shows a draggable topmost overlay.
+- **AC-03 Start/error:** local countdown starts only after a successful command exit; launch failure/non-zero exit leaves the app idle.
 - **AC-04 Display:** 181 s => `4 min`; 180 s => `03:00`; 59 s => `00:59`; zero/negative => `00:00`.
-- **AC-05 No in-app cancellation:** no UI action calls `shutdown /a`; hide/exit do not cancel.
-- **AC-06 External abort:** separate-terminal cancellation returns UI to idle based on a validated event, tested as standard user on Windows 10.
-- **AC-07 Forced close:** manual destructive test confirms `/f` closes a disposable unsaved app without a save prompt.
-- **AC-08 No shutdown blocking:** no rejected `WM_QUERYENDSESSION`, shutdown-block reason or other delay.
-- **AC-09 Errors:** schedule failure leaves app idle and shows an error.
+- **AC-05 Warning:** seconds 1-30 show a subtle red text pulse; zero is static and not red/pulsing.
+- **AC-06 Approximation:** the app does not monitor Windows shutdown or detect external `shutdown /a`; the local countdown can continue to zero after external cancellation.
+- **AC-07 No in-app cancellation:** no UI action calls `shutdown /a`; hide/exit do not cancel.
+- **AC-08 Forced close:** manual destructive test confirms `/f` closes a disposable test app without a save prompt.
+- **AC-09 No shutdown blocking:** no rejected `WM_QUERYENDSESSION`, shutdown-block reason or other delay.
 - **AC-10 CI safety:** PR CI builds/tests but never executes real shutdown; EXE publishing is manual-only.
