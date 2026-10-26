@@ -46,7 +46,7 @@ public sealed class TrayController : ApplicationContext
 
         _countdownTimer = new System.Windows.Forms.Timer
         {
-            Interval = 1000
+            Interval = 250
         };
         _countdownTimer.Tick += OnCountdownTimerTick;
 
