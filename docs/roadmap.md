@@ -96,6 +96,8 @@ Acceptance:
 
 ## PR-005 - setup window and duration controls
 
+**Status:** Merged as PR #5 on 2026-10-26. Squash merge commit: `30717839b84470943cc355424a02622b8191c029`. Required Windows CI passed format verification, Release build, and 59/59 tests: https://github.com/dimkabuki/win-shut/actions/runs/40376646137
+
 **Suggested branch:** `feature/setup-ui`
 
 Scope:
@@ -133,6 +135,14 @@ Acceptance:
 - During seconds 1-30, use a subtle red **text-colour pulse only**, approximately once per second. Do not flash the whole window, toggle visibility, or animate the background. At `00:00`, stop the pulse and keep the display static.
 - The overlay and tray tooltip make clear that the countdown is an estimate, not a Windows shutdown status indicator.
 - No in-app Cancel/Stop control is added.
+
+**Implementation in PR #6:**
+- Add a tray application context with the required Show setup, Show countdown, and Exit application actions. Keep Show countdown disabled until scheduling succeeds.
+- Move countdown refresh to one shared timer so the setup status and overlay use the same controller and monotonic clock.
+- Add a borderless, draggable, always-on-top overlay. Its hide control and window-close handling hide the UI only; they never cancel Windows shutdown.
+- Use the existing formatter and final-30-second classifier. Pulse only the countdown text between muted red tones at a 500 ms phase interval; zero remains static 00:00.
+- Keep the tray tooltip and overlay explicit that the countdown is approximate and is not Windows shutdown status. The overlay close control has no cancellation semantics.
+- Automated tests continue to use fake process launchers; no test or CI workflow launches shutdown.exe. Required Windows CI and manual UI validation must be checked on PR #6 before proceeding.
 
 ## PR-007 - lifecycle, single-instance behaviour and cleanup
 
