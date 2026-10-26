@@ -165,7 +165,9 @@ public sealed class SetupForm : Form
 
     private Font CreateOwnedFont(string familyName, float size, FontStyle style)
     {
-        return CreateOwnedFont(new FontFamily(familyName), size, style);
+        var font = new Font(familyName, size, style);
+        _ownedFonts.Add(font);
+        return font;
     }
 
     private Font CreateOwnedFont(FontFamily family, float size, FontStyle style)
