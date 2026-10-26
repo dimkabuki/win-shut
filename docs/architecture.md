@@ -41,7 +41,7 @@ Keep implementation proportional; merge folders if that reduces complexity, but 
 - **ShutdownScheduler:** resolves system executable and passes arguments via `ProcessStartInfo.ArgumentList`. Returns success/failure; never invokes `shutdown /a`.
 - **CountdownFormatter:** pure function from remaining duration to a display string.
 - **CountdownVisualState:** pure classification for minute display, normal seconds, last-30-second warning and zero reached.
-- **SingleInstance:** named mutex or equivalent guard so a duplicate process cannot schedule a second shutdown. Add activation IPC only if justified; do not add a complex IPC framework.
+- **SingleInstanceGuard:** owns a named mutex for the application's lifetime so a second process cannot schedule another shutdown. A duplicate launch shows an informational message and exits; activation IPC is intentionally omitted.
 
 There is deliberately no event-log watcher, polling loop or other detector for Windows shutdown state. If shutdown is canceled externally, the app does not know and the display keeps counting down.
 
