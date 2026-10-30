@@ -8,7 +8,7 @@ public sealed class SetupForm : Form
 {
     private readonly DurationSelectionModel _durationModel;
     private readonly CountdownController _countdownController;
-    private readonly Label _selectedDurationLabel;
+    private readonly NumericUpDown _durationInput;
     private readonly Label _statusLabel;
     private readonly Button _decrementButton;
     private readonly Button _incrementButton;
@@ -62,8 +62,8 @@ public sealed class SetupForm : Form
             Size = new Size(472, 42),
             FlowDirection = FlowDirection.LeftToRight,
             WrapContents = false,
-            Margin = System.Windows.Forms.Padding.Empty,
-            Padding = System.Windows.Forms.Padding.Empty
+            Margin = Padding.Empty,
+            Padding = Padding.Empty
         };
 
         _presetButtons = DurationSelectionModel.Presets
@@ -75,13 +75,34 @@ public sealed class SetupForm : Form
             presetPanel.Controls.Add(button);
         }
 
-        _selectedDurationLabel = new Label
+        var durationLabel = new Label
         {
-            Name = "selectedDurationLabel",
-            Location = new Point(24, 139),
-            Size = new Size(472, 38),
-            Font = CreateOwnedFont("Segoe UI", 21F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter
+            Name = "durationLabel",
+            Location = new Point(82, 145),
+            Size = new Size(160, 28),
+            Text = "Duration (minutes):",
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        _durationInput = new NumericUpDown
+        {
+            Name = "durationInput",
+            Location = new Point(254, 142),
+            Size = new Size(130, 32),
+            Minimum = DurationSelectionModel.MinimumMinutes,
+            Maximum = DurationSelectionModel.MaximumMinutes,
+            Increment = 1,
+            DecimalPlaces = 0,
+            ThousandsSeparator = false,
+            TextAlign = HorizontalAlignment.Center,
+            Font = CreateOwnedFont("Segoe UI", 12F, FontStyle.Regular),
+            Value = _durationModel.SelectedMinutes,
+            AccessibleName = "Duration in whole minutes"
+        };
+        _durationInput.ValueChanged += (_, _) =>
+        {
+            _durationModel.SetMinutes(decimal.ToInt32(_durationInput.Value));
+            UpdateDurationControls();
         };
 
         _decrementButton = CreateButton("-5 min", "decrementButton", new Size(126, 38));
@@ -135,7 +156,8 @@ public sealed class SetupForm : Form
             heading,
             subtitle,
             presetPanel,
-            _selectedDurationLabel,
+            durationLabel,
+            _durationInput,
             _decrementButton,
             _incrementButton,
             forcedShutdownWarning,
@@ -225,7 +247,11 @@ public sealed class SetupForm : Form
 
     private void UpdateDurationControls()
     {
-        _selectedDurationLabel.Text = $"{_durationModel.SelectedMinutes} minutes";
+        var selectedMinutes = (decimal)_durationModel.SelectedMinutes;
+        if (_durationInput.Value != selectedMinutes)
+        {
+            _durationInput.Value = selectedMinutes;
+        }
 
         foreach (var button in _presetButtons)
         {
@@ -237,6 +263,7 @@ public sealed class SetupForm : Form
                 : SystemColors.Control;
         }
 
+        _durationInput.Enabled = CanEditDuration;
         _decrementButton.Enabled = CanEditDuration && _durationModel.CanDecrement;
         _incrementButton.Enabled = CanEditDuration && _durationModel.CanIncrement;
         _startButton.Enabled = !_startInProgress && _countdownController.State == CountdownControllerState.Idle;
