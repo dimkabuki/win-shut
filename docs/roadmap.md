@@ -174,7 +174,7 @@ Acceptance:
 
 ## PR-008 - Windows validation, packaging and release hand-off
 
-**Status:** Merged as PR #8. The Windows validation checklist and release hand-off documentation are on `main`; publishing and manual Windows runtime validation remain outstanding.
+**Status:** Merged as PR #8 on 2026-10-26. Squash merge commit: `9011a5a1412a26fb995dea461422749a5d7e032e`. The Windows validation checklist and release hand-off documentation are on `main`; publishing and manual Windows runtime validation remain outstanding.
 
 **Suggested branch:** `test/windows-release-validation`
 
