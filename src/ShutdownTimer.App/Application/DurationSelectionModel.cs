@@ -27,6 +27,19 @@ public sealed class DurationSelectionModel
                 "Only 15, 30, and 45 minute presets are supported.");
         }
 
+        SetMinutes(minutes);
+    }
+
+    public void SetMinutes(int minutes)
+    {
+        if (minutes < MinimumMinutes || minutes > MaximumMinutes)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(minutes),
+                minutes,
+                $"Duration must be between {MinimumMinutes} and {MaximumMinutes} whole minutes.");
+        }
+
         SelectedMinutes = minutes;
     }
 
@@ -34,7 +47,7 @@ public sealed class DurationSelectionModel
     {
         if (CanIncrement)
         {
-            SelectedMinutes = Math.Min(SelectedMinutes + StepMinutes, MaximumMinutes);
+            SetMinutes(Math.Min(SelectedMinutes + StepMinutes, MaximumMinutes));
         }
     }
 
@@ -42,7 +55,7 @@ public sealed class DurationSelectionModel
     {
         if (CanDecrement)
         {
-            SelectedMinutes = Math.Max(SelectedMinutes - StepMinutes, MinimumMinutes);
+            SetMinutes(Math.Max(SelectedMinutes - StepMinutes, MinimumMinutes));
         }
     }
 }
