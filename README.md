@@ -28,4 +28,4 @@ A small Windows-only desktop utility that schedules a forced shutdown through th
 - [Windows release validation checklist](docs/release-validation.md)
 - [ADR-0001: stack choice](docs/decisions/ADR-0001-stack.md)
 
-The first user run confirmed that the Windows shutdown request succeeds, but exposed a stopped production countdown clock, missing direct duration entry, and oversized overlay typography. PR-009 addresses these issues. The countdown remains an estimate and does not detect an external `shutdown /a` cancellation. Use this utility only when forced shutdown and potential loss of unsaved work are understood.
+The application provides editable whole-minute durations and a local approximate countdown. The countdown does not monitor Windows shutdown state or detect an external `shutdown /a` cancellation. Forced shutdown can close applications without save prompts and may cause data loss.
