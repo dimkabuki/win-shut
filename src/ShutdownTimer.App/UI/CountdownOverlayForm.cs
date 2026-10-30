@@ -13,9 +13,9 @@ public sealed class CountdownOverlayForm : Form
     private static readonly Color WarningDimColor = Color.FromArgb(190, 92, 92);
     private static readonly Color WarningBrightColor = Color.FromArgb(255, 138, 138);
 
-    private readonly Font _captionFont = new("Segoe UI", 8F, FontStyle.Bold);
-    private readonly Font _countdownFont = new("Segoe UI", 25F, FontStyle.Bold);
-    private readonly Font _hideFont = new("Segoe UI", 14F, FontStyle.Regular);
+    private readonly Font _captionFont = new("Segoe UI", 7.5F, FontStyle.Bold);
+    private readonly Font _countdownFont = new("Segoe UI", 18F, FontStyle.Bold);
+    private readonly Font _hideFont = new("Segoe UI", 11F, FontStyle.Regular);
     private readonly System.Windows.Forms.Timer _pulseTimer;
 
     private string _countdownText = "--:--";
