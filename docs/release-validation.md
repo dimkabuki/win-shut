@@ -30,12 +30,16 @@ Record PASS, FAIL, or NOT RUN and concise evidence.
 | Check | Result | Evidence |
 |---|---|---|
 | Launches without separately installed .NET Desktop Runtime | NOT RUN | |
-| Initial duration and 15/30/45 presets | NOT RUN | |
+| Initial duration, editable whole-minute input and 15/30/45 presets | NOT RUN | |
+| Direct entry of 7, 37 and 179 minutes; reject values outside 5-180 | NOT RUN | |
+| +/-5-minute changes and 5-180 minute bounds, including from custom values | NOT RUN | |
 | +/- 5-minute changes and 5-180 minute bounds | NOT RUN | |
 | Start failure is reported and UI remains usable | NOT RUN | Use a controlled test seam. |
 | Successful start hides setup to tray and shows overlay | NOT RUN | |
 | Overlay movement, topmost behavior, hide/show | NOT RUN | |
+| Overlay countdown font is compact/readable at normal desktop scaling | NOT RUN | |
 | Tray menu actions | NOT RUN | |
+| Countdown visibly decreases after scheduling; display progresses from rounded minutes to seconds at 180 seconds | NOT RUN | |
 | Countdown minute/second formatting | NOT RUN | |
 | Final-30-second text pulse and static zero display | NOT RUN | Use a controlled test seam if needed. |
 | Duplicate launch is rejected | NOT RUN | |
