@@ -174,7 +174,7 @@ Acceptance:
 
 ## PR-008 - Windows validation, packaging and release hand-off
 
-**Status:** In progress on `test/windows-release-validation`.
+**Status:** Merged as PR #8 on 2026-10-26. Squash merge commit: `9011a5a1412a26fb995dea461422749a5d7e032e`. The Windows validation checklist and release hand-off documentation are on `main`; publishing and manual Windows runtime validation remain outstanding.
 
 **Suggested branch:** `test/windows-release-validation`
 
@@ -191,6 +191,26 @@ Acceptance:
 - Manual evidence records Windows edition/build and user privilege level; no result is claimed without observation.
 - Any remaining manual-only checks are explicitly listed in the final hand-off.
 - CI remains limited to build/tests; neither automated tests nor CI execute real shutdown.
+
+## PR-009 - fix countdown clock, editable duration and overlay typography
+
+**Status:** In progress on `fix/countdown-input-overlay`.
+
+Scope:
+- Start the production monotonic clock automatically and add a regression test for clock advancement.
+- Add editable whole-minute duration input (5-180 minutes), while retaining 15/30/45 presets and +/-5-minute steps.
+- Allow the scheduler to accept every supported whole-minute value and pass the exact seconds to `shutdown.exe`.
+- Reduce the countdown overlay font sizes.
+- Update requirements, testing, release validation and hand-off documentation.
+
+Acceptance:
+- The production countdown visibly advances from the selected duration after a successful schedule; the clock does not depend on UI tick count.
+- Direct entry accepts any integer from 5 through 180, including values that are not multiples of five. Out-of-range values are rejected.
+- Presets and +/-5 controls stay synchronized with the numeric input.
+- Scheduler tests prove exact second conversion for custom values, with no real process execution.
+- Overlay countdown typography is visibly smaller without changing shutdown behavior.
+- CI passes format verification, Release build and all tests. Manual Windows retest remains explicitly recorded until performed.
+- No automated test or workflow executes real shutdown.
 
 ## Cross-PR rules
 

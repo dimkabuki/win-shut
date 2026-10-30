@@ -24,6 +24,18 @@ public sealed class CountdownControllerTests
     }
 
     [Fact]
+    public async Task StartsCountdownForCustomWholeMinuteDuration()
+    {
+        var clock = new FakeClock();
+        var controller = CreateController(clock, new FakeProcessLauncher());
+
+        var started = await controller.StartAsync(37);
+
+        Assert.True(started);
+        Assert.Equal(TimeSpan.FromMinutes(37), controller.Remaining);
+    }
+
+    [Fact]
     public async Task FailedScheduleLeavesControllerIdleWithoutCountdown()
     {
         var clock = new FakeClock();
@@ -130,7 +142,7 @@ public sealed class CountdownControllerTests
         var launcher = new FakeProcessLauncher();
         var controller = CreateController(clock, launcher);
 
-        Assert.False(await controller.StartAsync(6));
+        Assert.False(await controller.StartAsync(4));
 
         Assert.Equal(CountdownControllerState.Idle, controller.State);
         Assert.NotNull(controller.ErrorMessage);

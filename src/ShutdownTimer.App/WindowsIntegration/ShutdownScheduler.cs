@@ -18,15 +18,13 @@ public sealed class ShutdownScheduler
     public async Task<ShutdownScheduleResult> ScheduleAsync(int durationMinutes)
     {
         if (durationMinutes < DurationSelectionModel.MinimumMinutes
-            || durationMinutes > DurationSelectionModel.MaximumMinutes
-            || durationMinutes % DurationSelectionModel.StepMinutes != 0)
+            || durationMinutes > DurationSelectionModel.MaximumMinutes)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(durationMinutes),
                 durationMinutes,
                 $"Duration must be between {DurationSelectionModel.MinimumMinutes} and "
-                + $"{DurationSelectionModel.MaximumMinutes} minutes in "
-                + $"{DurationSelectionModel.StepMinutes}-minute steps.");
+                + $"{DurationSelectionModel.MaximumMinutes} whole minutes.");
         }
 
         var durationSeconds = checked(durationMinutes * 60);

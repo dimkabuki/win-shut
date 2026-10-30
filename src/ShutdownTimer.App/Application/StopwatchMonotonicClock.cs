@@ -4,11 +4,7 @@ namespace ShutdownTimer.App.Application;
 
 public sealed class StopwatchMonotonicClock : IMonotonicClock
 {
-    private readonly Stopwatch _stopwatch = new();
+    private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
     public TimeSpan Elapsed => _stopwatch.Elapsed;
-
-    public void Start() => _stopwatch.Start();
-
-    public void Reset() => _stopwatch.Reset();
 }

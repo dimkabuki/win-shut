@@ -10,9 +10,12 @@ public sealed class ShutdownSchedulerTests
 {
     [Theory]
     [InlineData(5, 300)]
+    [InlineData(6, 360)]
     [InlineData(15, 900)]
     [InlineData(30, 1800)]
+    [InlineData(37, 2220)]
     [InlineData(45, 2700)]
+    [InlineData(179, 10740)]
     [InlineData(180, 10800)]
     public async Task BuildsSystemShutdownCommandWithSeparateArguments(int durationMinutes, int durationSeconds)
     {
@@ -38,9 +41,8 @@ public sealed class ShutdownSchedulerTests
     [InlineData(-5)]
     [InlineData(0)]
     [InlineData(4)]
-    [InlineData(6)]
     [InlineData(181)]
-    public async Task RejectsUnsupportedDurationsBeforeLaunching(int durationMinutes)
+    public async Task RejectsDurationsOutsideSupportedRangeBeforeLaunching(int durationMinutes)
     {
         var launcher = new FakeProcessLauncher();
         var scheduler = new ShutdownScheduler(launcher);
