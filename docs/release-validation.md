@@ -34,11 +34,9 @@ Record PASS, FAIL, or NOT RUN and concise evidence.
 | Editable whole-minute input (5-180) | FAIL (user report) | First run had no direct value-entry control. |
 | Direct entry of 7, 37 and 179 minutes; reject values outside 5-180 | NOT RUN | |
 | +/-5-minute changes and 5-180 minute bounds, including from custom values | NOT RUN | |
-| +/- 5-minute changes and 5-180 minute bounds | NOT RUN | |
 | Start failure is reported and UI remains usable | NOT RUN | Use a controlled test seam. |
 | Successful start hides setup to tray and shows overlay | NOT RUN | |
 | Overlay movement, topmost behavior, hide/show | NOT RUN | |
-| Overlay countdown font is compact/readable at normal desktop scaling | FAIL (user report) | Initial popup countdown font was reported as too large. |
 | Overlay countdown font is compact/readable at normal desktop scaling | FAIL (user report) | Initial popup countdown font was reported as too large. |
 | Tray menu actions | NOT RUN | |
 | Windows accepts the shutdown request and powers off at the selected timeout | PASS (user report) | First run; Windows build and privilege level not recorded. |
