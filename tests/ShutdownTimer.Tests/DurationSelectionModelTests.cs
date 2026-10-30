@@ -29,25 +29,38 @@ public sealed class DurationSelectionModelTests
         Assert.Equal(minutes, model.SelectedMinutes);
     }
 
-    [Fact]
-    public void MultipleIncrementAndDecrementOperationsUseFiveMinuteSteps()
+    [Theory]
+    [InlineData(6)]
+    [InlineData(17)]
+    [InlineData(37)]
+    [InlineData(179)]
+    public void SetMinutesAcceptsAnyWholeMinuteWithinBounds(int minutes)
     {
         var model = new DurationSelectionModel();
 
-        model.Increment();
+        model.SetMinutes(minutes);
+
+        Assert.Equal(minutes, model.SelectedMinutes);
+    }
+
+    [Fact]
+    public void MultipleIncrementAndDecrementOperationsUseFiveMinuteStepsFromCustomValue()
+    {
+        var model = new DurationSelectionModel();
+        model.SetMinutes(37);
+
         model.Increment();
         model.Decrement();
 
-        Assert.Equal(35, model.SelectedMinutes);
+        Assert.Equal(37, model.SelectedMinutes);
     }
 
     [Fact]
     public void DecrementStopsAtMinimumWithoutWrapping()
     {
         var model = new DurationSelectionModel();
-        model.SelectPreset(15);
+        model.SetMinutes(6);
 
-        model.Decrement();
         model.Decrement();
 
         Assert.Equal(DurationSelectionModel.MinimumMinutes, model.SelectedMinutes);
@@ -62,11 +75,9 @@ public sealed class DurationSelectionModelTests
     public void IncrementStopsAtMaximumWithoutWrapping()
     {
         var model = new DurationSelectionModel();
+        model.SetMinutes(179);
 
-        while (model.CanIncrement)
-        {
-            model.Increment();
-        }
+        model.Increment();
 
         Assert.Equal(DurationSelectionModel.MaximumMinutes, model.SelectedMinutes);
         Assert.False(model.CanIncrement);
@@ -74,6 +85,20 @@ public sealed class DurationSelectionModelTests
         model.Increment();
 
         Assert.Equal(DurationSelectionModel.MaximumMinutes, model.SelectedMinutes);
+    }
+
+    [Theory]
+    [InlineData(-5)]
+    [InlineData(0)]
+    [InlineData(4)]
+    [InlineData(181)]
+    public void SetMinutesRejectsValuesOutsideBounds(int minutes)
+    {
+        var model = new DurationSelectionModel();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => model.SetMinutes(minutes));
+
+        Assert.Equal(DurationSelectionModel.DefaultMinutes, model.SelectedMinutes);
     }
 
     [Theory]
