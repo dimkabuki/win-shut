@@ -194,7 +194,7 @@ Acceptance:
 
 ## PR-009 - fix countdown clock, editable duration and overlay typography
 
-**Status:** In progress on `fix/countdown-input-overlay`.
+**Status:** Merged as PR #9 on 2026-10-30. Squash merge commit: `e09d4a8019b2fb498ca27870cda486f81868e5c4`. Required Windows CI run #41042505856 passed format verification, Release build (0 warnings, 0 errors), and 73/73 tests: https://github.com/dimkabuki/win-shut/actions/runs/41042505856.
 
 Scope:
 - Start the production monotonic clock automatically and add a regression test for clock advancement.
