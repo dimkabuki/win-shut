@@ -29,17 +29,20 @@ Record PASS, FAIL, or NOT RUN and concise evidence.
 
 | Check | Result | Evidence |
 |---|---|---|
-| Launches without separately installed .NET Desktop Runtime | NOT RUN | |
-| Initial duration, editable whole-minute input and 15/30/45 presets | NOT RUN | |
+| Launches without separately installed .NET Desktop Runtime | NOT RUN | Clean-machine/runtime details not captured. |
+| Initial duration and 15/30/45 presets | NOT RUN | |
+| Editable whole-minute input (5-180) | FAIL (user report) | First run had no direct value-entry control. |
 | Direct entry of 7, 37 and 179 minutes; reject values outside 5-180 | NOT RUN | |
 | +/-5-minute changes and 5-180 minute bounds, including from custom values | NOT RUN | |
 | +/- 5-minute changes and 5-180 minute bounds | NOT RUN | |
 | Start failure is reported and UI remains usable | NOT RUN | Use a controlled test seam. |
 | Successful start hides setup to tray and shows overlay | NOT RUN | |
 | Overlay movement, topmost behavior, hide/show | NOT RUN | |
-| Overlay countdown font is compact/readable at normal desktop scaling | NOT RUN | |
+| Overlay countdown font is compact/readable at normal desktop scaling | FAIL (user report) | Initial popup countdown font was reported as too large. |
+| Overlay countdown font is compact/readable at normal desktop scaling | FAIL (user report) | Initial popup countdown font was reported as too large. |
 | Tray menu actions | NOT RUN | |
-| Countdown visibly decreases after scheduling; display progresses from rounded minutes to seconds at 180 seconds | NOT RUN | |
+| Windows accepts the shutdown request and powers off at the selected timeout | PASS (user report) | First run; Windows build and privilege level not recorded. |
+| Countdown visibly decreases after scheduling; display progresses from rounded minutes to seconds at 180 seconds | FAIL (user report) | Display remained at the originally selected duration. |
 | Countdown minute/second formatting | NOT RUN | |
 | Final-30-second text pulse and static zero display | NOT RUN | Use a controlled test seam if needed. |
 | Duplicate launch is rejected | NOT RUN | |
@@ -56,6 +59,10 @@ Only use a disposable VM or test session. Save or discard all work first. The ap
 - **System/session close:** verify the app does not veto, block, or delay normal Windows/session shutdown.
 
 Never run these trials in CI or automated tests.
+
+## Initial user-run observations (2026-10-30)
+
+The first user run confirmed the Windows shutdown request was accepted and the laptop powered off after the selected timeout. The displayed countdown did not change from the initial value, the setup UI had no direct duration input, and the overlay countdown font was considered too large. These are user-observed results; Windows edition/build and privilege level were not captured. PR-009 is intended to address the three reported issues. Re-run all affected checks before treating them as resolved.
 
 ## Results summary
 
