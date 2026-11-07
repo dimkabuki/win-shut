@@ -5,10 +5,11 @@
 - GitHub PRs #1-#10 are merged to `main`.
 - PR #9 merged as `e09d4a8019b2fb498ca27870cda486f81868e5c4`. Required Windows CI run #41042505856 passed format verification, Release build with 0 warnings and 0 errors, and 73/73 tests: https://github.com/dimkabuki/win-shut/actions/runs/41042505856
 - PR #10 merged the PR-009 release-readiness documentation as `f5c2e4c4f3504433f2062a2e3f718999e7f13452`.
-- Current task: PR-010 — append-only shutdown start history, branch `feature/shutdown-history`.
+- Current task: PR-010 — append-only shutdown start history, GitHub PR #11 on `feature/shutdown-history`.
+- Required Windows CI run #42414502010 passed format verification, Release build with 0 warnings and 0 errors, and 78/78 tests: https://github.com/dimkabuki/win-shut/actions/runs/42414502010
 - The writer appends only after the shutdown scheduler succeeds. Each row contains a local ISO 8601 timestamp with offset and the selected duration in whole minutes. Target file: `Documents/win-shut.log`.
 - File-write failures are reported but do not undo a Windows shutdown request already accepted or stop the countdown transition.
-- Automated tests for file creation, append semantics, timestamp formatting, default Documents path and duration validation have been added. PR CI has not yet run for this task.
+- Automated tests cover file/parent creation, append semantics, timestamp formatting, default Documents path and duration validation. The PR's final documentation update is also subject to the required `verify` check.
 - Manual Windows validation remains outstanding. Local .NET format/build/test commands are not available in this authoring environment; required Windows CI is the automated validation source of truth.
 
 ## Preserved constraints
