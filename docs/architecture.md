@@ -44,7 +44,7 @@ Keep implementation proportional; merge folders if that reduces complexity, but 
 - **CountdownFormatter:** pure function from remaining duration to a display string.
 - **CountdownVisualState:** pure classification for minute display, normal seconds, last-30-second warning and zero reached.
 - **SingleInstanceGuard:** owns a named mutex for the application's lifetime so a second process cannot schedule another shutdown. A duplicate launch shows an informational message and exits; activation IPC is intentionally omitted.
-- **ShutdownHistoryWriter:** appends one local ISO 8601 timestamp and selected duration in minutes to `win-shut.log` directly in the user's Documents folder after Windows accepts a shutdown request. It creates the file/parent folder when missing, preserves existing entries, and has no other logging responsibilities.
+- **ShutdownHistoryWriter:** appends the timestamp captured at the Start click and the selected duration in minutes to `win-shut.log` directly in the user's Documents folder, but only after Windows accepts the shutdown request. It creates the file/parent folder when missing, preserves existing entries, and has no other logging responsibilities.
 
 There is deliberately no event-log watcher, polling loop or other detector for Windows shutdown state. If shutdown is canceled externally, the app does not know and the display keeps counting down.
 
@@ -72,7 +72,7 @@ Keep process launch behind a small interface. Tests assert executable path and a
 
 ## History persistence
 
-After the shutdown command succeeds, append a single CSV-style row to `Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "win-shut.log")`. The row contains only the local `DateTimeOffset` in round-trip ISO 8601 format and the duration in whole minutes. Open in append mode; create the containing folder and file when missing. Do not add headers, rotation, retention, other event types, or a general logging framework. Failed scheduling writes no row. If persistence fails after Windows accepted the request, notify the user but continue the countdown because the OS shutdown cannot be rolled back by the history writer.
+After the shutdown command succeeds, append a single CSV-style row to `Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "win-shut.log")`. The row contains only the local `DateTimeOffset` captured at Start in round-trip ISO 8601 format and the duration in whole minutes. Open in append mode; create the containing folder and file when missing. Do not add headers, rotation, retention, other event types, or a general logging framework. Failed scheduling writes no row. If persistence fails after Windows accepted the request, notify the user but continue the countdown because the OS shutdown cannot be rolled back by the history writer.
 
 ## Failure and shutdown safety
 
