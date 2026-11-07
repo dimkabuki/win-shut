@@ -27,7 +27,7 @@ Perform in a disposable VM/test account with no valuable unsaved data. External-
 2. Check 15/30/45 presets and enter non-preset values such as 7, 37 and 179 minutes. Confirm values outside 5-180 are rejected.
 3. Confirm +/-5 changes work from custom values and stop at the 5/180 boundaries.
 4. Check the generated duration in seconds and Start/error behavior.
-5. After a successful scheduling request, confirm one new row appears at `Documents\\win-shut.log` with the local timestamp and selected duration in minutes. Repeat with a different duration and confirm the first row remains unchanged. Confirm failed scheduling does not add a row.
+5. After a successful scheduling request, confirm one new row appears at `Documents/win-shut.log` with the local timestamp and selected duration in minutes. Repeat with a different duration and confirm the first row remains unchanged. Confirm failed scheduling does not add a row.
 6. Confirm the local display visibly decreases while the scheduled Windows shutdown remains in the future. Check that the display progresses from rounded minutes to seconds at three minutes remaining.
 7. Confirm successful start hides setup to tray and shows a movable, topmost overlay with the reduced font size.
 8. Verify the subtle red text pulse in the final 30 seconds; confirm animation stops at `00:00`.
