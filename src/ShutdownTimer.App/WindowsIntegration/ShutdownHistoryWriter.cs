@@ -9,14 +9,10 @@ public sealed class ShutdownHistoryWriter
     private static readonly UTF8Encoding Utf8WithoutBom = new(encoderShouldEmitUTF8Identifier: false);
 
     private readonly string _filePath;
-    private readonly Func<DateTimeOffset> _getLocalTimestamp;
-
-    public ShutdownHistoryWriter(string filePath, Func<DateTimeOffset>? getLocalTimestamp = null)
+    public ShutdownHistoryWriter(string filePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
-
         _filePath = filePath;
-        _getLocalTimestamp = getLocalTimestamp ?? (() => DateTimeOffset.Now);
     }
 
     public static string GetDefaultFilePath()
@@ -30,7 +26,7 @@ public sealed class ShutdownHistoryWriter
         return Path.Combine(documentsDirectory, "win-shut.log");
     }
 
-    public async Task AppendAsync(int durationMinutes)
+    public async Task AppendAsync(int durationMinutes, DateTimeOffset startedAt)
     {
         if (durationMinutes < DurationSelectionModel.MinimumMinutes
             || durationMinutes > DurationSelectionModel.MaximumMinutes)
@@ -42,7 +38,7 @@ public sealed class ShutdownHistoryWriter
                 + $"{DurationSelectionModel.MaximumMinutes} whole minutes.");
         }
 
-        var timestamp = _getLocalTimestamp().ToString("O", CultureInfo.InvariantCulture);
+        var timestamp = startedAt.ToString("O", CultureInfo.InvariantCulture);
         var record = string.Concat(
             timestamp,
             ",",
