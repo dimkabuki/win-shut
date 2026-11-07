@@ -10,16 +10,16 @@ public sealed class ShutdownHistoryWriterTests
     {
         var directory = CreateTemporaryDirectory();
         var filePath = Path.Combine(directory, "nested", "win-shut.log");
-        var timestamp = new DateTimeOffset(2026, 11, 7, 22, 15, 30, TimeSpan.FromHours(1));
-        var writer = new ShutdownHistoryWriter(filePath, () => timestamp);
+        var startedAt = new DateTimeOffset(2026, 11, 7, 22, 15, 30, TimeSpan.FromHours(1));
+        var writer = new ShutdownHistoryWriter(filePath);
 
         try
         {
-            await writer.AppendAsync(37);
+            await writer.AppendAsync(37, startedAt);
 
             Assert.True(File.Exists(filePath));
             var lines = await File.ReadAllLinesAsync(filePath);
-            Assert.Equal(new[] { $"{timestamp:O},37" }, lines);
+            Assert.Equal(new[] { $"{startedAt:O},37" }, lines);
         }
         finally
         {
@@ -32,24 +32,21 @@ public sealed class ShutdownHistoryWriterTests
     {
         var directory = CreateTemporaryDirectory();
         var filePath = Path.Combine(directory, "win-shut.log");
-        var timestamps = new Queue<DateTimeOffset>(
-        [
-            new DateTimeOffset(2026, 11, 7, 22, 15, 30, TimeSpan.FromHours(1)),
-            new DateTimeOffset(2026, 11, 7, 22, 16, 45, TimeSpan.FromHours(1))
-        ]);
-        var writer = new ShutdownHistoryWriter(filePath, () => timestamps.Dequeue());
+        var writer = new ShutdownHistoryWriter(filePath);
+        var firstStart = new DateTimeOffset(2026, 11, 7, 22, 15, 30, TimeSpan.FromHours(1));
+        var secondStart = new DateTimeOffset(2026, 11, 7, 22, 16, 45, TimeSpan.FromHours(1));
 
         try
         {
-            await writer.AppendAsync(15);
-            await writer.AppendAsync(180);
+            await writer.AppendAsync(15, firstStart);
+            await writer.AppendAsync(180, secondStart);
 
             var lines = await File.ReadAllLinesAsync(filePath);
             Assert.Equal(
                 new[]
                 {
-                    $"{new DateTimeOffset(2026, 11, 7, 22, 15, 30, TimeSpan.FromHours(1)):O},15",
-                    $"{new DateTimeOffset(2026, 11, 7, 22, 16, 45, TimeSpan.FromHours(1)):O},180"
+                    $"{firstStart:O},15",
+                    $"{secondStart:O},180"
                 },
                 lines);
         }
@@ -71,7 +68,7 @@ public sealed class ShutdownHistoryWriterTests
         try
         {
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                () => writer.AppendAsync(durationMinutes));
+                () => writer.AppendAsync(durationMinutes, DateTimeOffset.Now));
 
             Assert.False(File.Exists(filePath));
         }
