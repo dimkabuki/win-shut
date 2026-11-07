@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ShutdownTimer.App.Application;
+using ShutdownTimer.App.WindowsIntegration;
 
 namespace ShutdownTimer.App.UI;
 
@@ -8,6 +9,7 @@ public sealed class SetupForm : Form
 {
     private readonly DurationSelectionModel _durationModel;
     private readonly CountdownController _countdownController;
+    private readonly ShutdownHistoryWriter _shutdownHistoryWriter;
     private readonly NumericUpDown _durationInput;
     private readonly Label _statusLabel;
     private readonly Button _decrementButton;
@@ -20,10 +22,14 @@ public sealed class SetupForm : Form
 
     public event EventHandler? ShutdownScheduled;
 
-    public SetupForm(DurationSelectionModel durationModel, CountdownController countdownController)
+    public SetupForm(
+        DurationSelectionModel durationModel,
+        CountdownController countdownController,
+        ShutdownHistoryWriter shutdownHistoryWriter)
     {
         _durationModel = durationModel ?? throw new ArgumentNullException(nameof(durationModel));
         _countdownController = countdownController ?? throw new ArgumentNullException(nameof(countdownController));
+        _shutdownHistoryWriter = shutdownHistoryWriter ?? throw new ArgumentNullException(nameof(shutdownHistoryWriter));
 
         Text = "win-shut";
         StartPosition = FormStartPosition.CenterScreen;
@@ -301,6 +307,26 @@ public sealed class SetupForm : Form
             SetStatus(message, Color.DarkRed);
             UpdateDurationControls();
             return;
+        }
+
+        try
+        {
+            await _shutdownHistoryWriter.AppendAsync(selectedMinutes);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+                or UnauthorizedAccessException
+                or System.Security.SecurityException
+                or ArgumentException
+                or NotSupportedException)
+        {
+            MessageBox.Show(
+                this,
+                "Windows accepted the shutdown request, but its history entry could not be saved "
+                    + $"to Documents\\win-shut.log.{Environment.NewLine}{exception.Message}",
+                "win-shut",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
         }
 
         UpdateDurationControls();
