@@ -286,6 +286,7 @@ public sealed class SetupForm : Form
         }
 
         var selectedMinutes = _durationModel.SelectedMinutes;
+        var startedAt = DateTimeOffset.Now;
         _startInProgress = true;
         SetStatus("Requesting the Windows shutdown command...", SystemColors.ControlText);
         UpdateDurationControls();
@@ -311,7 +312,7 @@ public sealed class SetupForm : Form
 
         try
         {
-            await _shutdownHistoryWriter.AppendAsync(selectedMinutes);
+            await _shutdownHistoryWriter.AppendAsync(selectedMinutes, startedAt);
         }
         catch (Exception exception) when (
             exception is IOException
