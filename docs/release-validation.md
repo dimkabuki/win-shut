@@ -44,6 +44,9 @@ Record PASS, FAIL, or NOT RUN and concise evidence.
 | Countdown minute/second formatting | NOT RUN | |
 | Final-30-second text pulse and static zero display | NOT RUN | Use a controlled test seam if needed. |
 | Duplicate launch is rejected | NOT RUN | |
+| Successful Start appends one timestamp/duration row to `Documents/win-shut.log` and preserves prior rows | NOT RUN | |
+| Failed shutdown scheduling does not append a history row | NOT RUN | |
+| History write failure warns the user without undoing the accepted shutdown request | NOT RUN | |
 | App exit leaves the OS timer independent of the app | NOT RUN | Isolated trial below. |
 | Windows/session shutdown is not blocked or delayed | NOT RUN | Disposable VM only. |
 
