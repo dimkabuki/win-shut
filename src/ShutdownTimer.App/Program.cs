@@ -28,8 +28,9 @@ internal static class Program
         var durationModel = new DurationSelectionModel();
         var scheduler = new ShutdownScheduler(new SystemProcessLauncher());
         var controller = new CountdownController(scheduler, new StopwatchMonotonicClock());
+        var historyWriter = new ShutdownHistoryWriter(ShutdownHistoryWriter.GetDefaultFilePath());
 
-        using var setupForm = new SetupForm(durationModel, controller);
+        using var setupForm = new SetupForm(durationModel, controller, historyWriter);
         using var overlayForm = new CountdownOverlayForm();
         using var trayController = new TrayController(setupForm, overlayForm, controller);
         System.Windows.Forms.Application.Run(trayController);

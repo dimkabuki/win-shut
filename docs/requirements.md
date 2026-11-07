@@ -8,7 +8,7 @@ Windows owns the actual shutdown timer. The app does not query, monitor or synch
 
 This is a convenience utility, not a tamper-resistant parental-control or security boundary.
 
-In scope: Windows 10 x64; C#/.NET 10/WinForms; duration presets and direct duration entry; a Start action; tray icon; draggable always-on-top countdown overlay; safe process invocation; deterministic tests; PR-only CI; manually triggered EXE publishing.
+In scope: Windows 10 x64; C#/.NET 10/WinForms; duration presets and direct duration entry; a Start action; tray icon; draggable always-on-top countdown overlay; safe process invocation; append-only local start history; deterministic tests; PR-only CI; manually triggered EXE publishing.
 
 Out of scope: shutdown-state detection, event-log watching, external-cancellation synchronization, in-app cancel/stop, remote management, accounts, cloud, telemetry, network, per-program limits, allow/block lists, PIN/password, kiosk mode, tamper resistance, service/task, admin install, registry policies, auto-start and non-Windows platforms.
 
@@ -58,7 +58,7 @@ The overlay/tray tooltip must make it clear that the displayed countdown is only
 
 ## Lifecycle and privacy
 
-Handle duplicate launches, duplicate Start requests, process-start failures, non-zero exit, disposal and tray/icon cleanup without unhandled exceptions. Use a single-instance guard so a second process does not silently schedule another timer. Restart recovery/persistence is not part of v1. Dispose timers, tray icon and handlers. No network, accounts, telemetry, usage history, elevation, service, task, registry policy or auto-start. Saving only the overlay position in current-user local app data is optional.
+Handle duplicate launches, duplicate Start requests, process-start failures, non-zero exit, disposal and tray/icon cleanup without unhandled exceptions. Use a single-instance guard so a second process does not silently schedule another timer. Restart recovery or persistence of an active Windows shutdown timer is not part of v1. Dispose timers, tray icon and handlers. No network, accounts, telemetry, general activity tracking, elevation, service, task, registry policy or auto-start. The only persisted activity record is the minimal append-only shutdown-start history defined in AC-11. Saving only the overlay position in current-user local app data is optional.
 
 ## Packaging and CI
 
@@ -76,3 +76,4 @@ Target `net10.0-windows`, publish self-contained single-file `win-x64`. PR CI tr
 - **AC-08 Forced close:** manual destructive test confirms `/f` closes a disposable test app without a save prompt.
 - **AC-09 No shutdown blocking:** no rejected `WM_QUERYENDSESSION`, shutdown-block reason or other delay.
 - **AC-10 CI safety:** PR CI builds/tests but never executes real shutdown; EXE publishing is manual-only.
+- **AC-11 Shutdown history:** after Windows accepts a Start request, append exactly one row to `Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "win-shut.log")` with the local ISO 8601 timestamp (including UTC offset) and selected duration in whole minutes. Create the file and its parent folder if missing; preserve all previous rows. Failed shutdown scheduling must not append a row. A history write failure must not undo the accepted shutdown request or stop its countdown; show a warning. Store no other fields and do not introduce general-purpose logging or telemetry.

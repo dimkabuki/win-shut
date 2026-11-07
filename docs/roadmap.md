@@ -212,6 +212,24 @@ Acceptance:
 - CI passes format verification, Release build and all tests. Manual Windows retest remains explicitly recorded until performed.
 - No automated test or workflow executes real shutdown.
 
+## PR-010 - append-only shutdown start history
+
+**Status:** Implemented in GitHub PR #11 on `feature/shutdown-history`. Required Windows CI run #42414502010 passed format verification, Release build with 0 warnings and 0 errors, and 78/78 tests: https://github.com/dimkabuki/win-shut/actions/runs/42414502010.
+
+Scope:
+- Append one record when Windows accepts a shutdown request.
+- Store the file directly in the user's Documents folder as `win-shut.log`.
+- Keep the record limited to the local ISO 8601 timestamp and selected whole-minute duration.
+- Add deterministic file-writer tests and update user/project documentation.
+
+Acceptance:
+- Every successfully scheduled Start request appends one line; a failed scheduling attempt appends nothing.
+- Each line contains the local timestamp with UTC offset and the duration in whole minutes.
+- The log file and parent Documents directory are created when missing; existing records are never overwritten.
+- A history-write failure is surfaced to the user but does not undo a shutdown request already accepted by Windows or prevent the countdown/tray transition.
+- No other event types, fields, general-purpose logging, telemetry, rotation or retention behavior are added.
+- Automated tests cover creation, append behavior, timestamp formatting, Documents path selection and duration validation; tests never invoke real shutdown.
+
 ## Cross-PR rules
 
 - Keep each PR focused, with a clear summary, acceptance criteria, tests and known limitations.
