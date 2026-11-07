@@ -14,6 +14,7 @@ Add coverage as features are implemented:
 - Scheduler executable path and separated args; arbitrary-minute durations, out-of-range values, process-start failure and non-zero exit. Tests use a fake launcher only; no test starts a process.
 - PR #4 covers state transitions, duplicate-start rejection, monotonic elapsed-time calculations and failure handling using a fake clock and fake process launcher; no test starts a process.
 - The named-mutex single-instance guard rejects a duplicate acquisition and allows reacquisition after disposal.
+- `ShutdownHistoryWriter` creates a missing Documents log file, appends without replacing earlier rows, writes local ISO 8601 timestamps plus whole-minute durations, resolves the default Documents path, and rejects out-of-range durations. Tests use temporary directories and never invoke the shutdown command.
 - Hiding/exiting never calls `shutdown /a`.
 - Use an injected fake process launcher and controllable clock; tests must not execute the actual `shutdown.exe`.
 - No tests should assert that an external OS cancellation is detected. The product intentionally does not monitor that state.
@@ -26,6 +27,7 @@ Perform in a disposable VM/test account with no valuable unsaved data. External-
 2. Check 15/30/45 presets and enter non-preset values such as 7, 37 and 179 minutes. Confirm values outside 5-180 are rejected.
 3. Confirm +/-5 changes work from custom values and stop at the 5/180 boundaries.
 4. Check the generated duration in seconds and Start/error behavior.
+5. After a successful scheduling request, confirm one new row appears at `Documents\\win-shut.log` with the local timestamp and selected duration in minutes. Repeat with a different duration and confirm the first row remains unchanged. Confirm failed scheduling does not add a row.
 5. Confirm the local display visibly decreases while the scheduled Windows shutdown remains in the future. Check that the display progresses from rounded minutes to seconds at three minutes remaining.
 6. Confirm successful start hides setup to tray and shows a movable, topmost overlay with the reduced font size.
 7. Verify the subtle red text pulse in the final 30 seconds; confirm animation stops at `00:00`.
