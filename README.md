@@ -12,7 +12,7 @@ A small Windows-only desktop utility that schedules a forced shutdown through th
 - Duration input accepts whole minutes from 5 through 180; 15/30/45 presets and +/-5-minute controls are also available.
 - The countdown is informational and approximate. The app does not monitor Windows shutdown state or detect external cancellation such as `shutdown /a`.
 - The last three minutes use a seconds display; the final 30 seconds use a subtle red text pulse.
-- Each accepted shutdown request appends its local timestamp and duration in minutes to `Documents\\win-shut.log`; no other activity is logged.
+- Each accepted shutdown request appends its local timestamp and duration in minutes to `Documents/win-shut.log`; no other activity is logged.
 - `/f` is intentional: apps may terminate without save prompts and unsaved data can be lost.
 - No in-app cancellation button and no app-side invocation of `shutdown /a`.
 - CI tests run only for PRs targeting `main`; EXE publishing is manual-only.
