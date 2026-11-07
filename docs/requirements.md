@@ -58,7 +58,7 @@ The overlay/tray tooltip must make it clear that the displayed countdown is only
 
 ## Lifecycle and privacy
 
-Handle duplicate launches, duplicate Start requests, process-start failures, non-zero exit, disposal and tray/icon cleanup without unhandled exceptions. Use a single-instance guard so a second process does not silently schedule another timer. Restart recovery/persistence is not part of v1. Dispose timers, tray icon and handlers. No network, accounts, telemetry, general activity tracking, elevation, service, task, registry policy or auto-start. The only persisted activity record is the minimal append-only shutdown-start history defined in AC-11. Saving only the overlay position in current-user local app data is optional.
+Handle duplicate launches, duplicate Start requests, process-start failures, non-zero exit, disposal and tray/icon cleanup without unhandled exceptions. Use a single-instance guard so a second process does not silently schedule another timer. Restart recovery or persistence of an active Windows shutdown timer is not part of v1. Dispose timers, tray icon and handlers. No network, accounts, telemetry, general activity tracking, elevation, service, task, registry policy or auto-start. The only persisted activity record is the minimal append-only shutdown-start history defined in AC-11. Saving only the overlay position in current-user local app data is optional.
 
 ## Packaging and CI
 
