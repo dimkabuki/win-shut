@@ -214,7 +214,7 @@ Acceptance:
 
 ## PR-010 - append-only shutdown start history
 
-**Status:** Implemented in GitHub PR #11 on `feature/shutdown-history`. Required Windows CI run #42414502010 passed format verification, Release build with 0 warnings and 0 errors, and 78/78 tests: https://github.com/dimkabuki/win-shut/actions/runs/42414502010.
+**Status:** Merged as PR #11. Squash merge commit: `f5e78009e9f0357e669bfbe3515a66fd80f419d3`. Required Windows CI run #42414621515 passed format verification, Release build with 0 warnings and 0 errors, and 78/78 tests: https://github.com/dimkabuki/win-shut/actions/runs/42414621515.
 
 Scope:
 - Append one record when Windows accepts a shutdown request.
